@@ -22,25 +22,19 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\core\models\tfs-work-items.ts" />
-    <None Remove="ClientApp\src\scenes\new-game\actions.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="ClientApp\src\scenes\new-game\actions.ts" />
+    <EmbeddedResource Remove="ClientApp\**" />
+    <None Remove="ClientApp\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\nfernopoker.Domain\nfernopoker.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\core\models\tfs-work-items.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -50,7 +44,6 @@
     </Exec>
     <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
     <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
   </Target>
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">

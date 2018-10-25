@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using nfernopoker.Config;
 using SmallOauth1;
 
@@ -55,7 +56,64 @@ namespace nfernopoker.Controllers
     [HttpGet("issues/{projectKey}")]
     public async Task<JsonResult> GetIssues(string projectKey)
     {
-      return Json(await SendRequest($"search?jql=project%3D{Uri.EscapeUriString(projectKey)}&maxResults%3D-1"));
+      var response = await SearchIssues($"project={projectKey}&maxResults=-1");
+      return Json(response);
+    }
+
+    [HttpGet("issues/search/{jql}")]
+    public async Task<JsonResult> SearchIssues(string jql)
+    {
+      //return Json(await SendRequest($"search?jql={Uri.EscapeUriString(jql)}"));
+      string json = @"
+{
+    ""expand"": ""schema,names"",
+    ""startAt"": 0,
+    ""maxResults"": 50,
+    ""total"": 2,
+    ""issues"": [
+        {
+            ""expand"": ""html"",
+            ""id"": ""10230"",
+            ""self"": ""http://localhost:8080/rest/api/2/issue/BULK-62"",
+            ""key"": ""BULK-62"",
+            ""fields"": {
+                ""summary"": ""testing"",
+                ""timetracking"": null,
+                ""issuetype"": {
+                    ""self"": ""http://localhost:8080/rest/api/2/issuetype/5"",
+                    ""id"": ""5"",
+                    ""description"": ""The sub-task of the issue"",
+                    ""iconUrl"": ""http://localhost:8080/images/icons/issue_subtask.gif"",
+                    ""name"": ""Sub-task"",
+                    ""subtask"": true
+                },
+                ""customfield_10071"": null
+            },
+            ""transitions"": ""http://localhost:8080/rest/api/2/issue/BULK-62/transitions""
+        },
+        {
+            ""expand"": ""html"",
+            ""id"": ""10004"",
+            ""self"": ""http://localhost:8080/rest/api/2/issue/BULK-47"",
+            ""key"": ""BULK-47"",
+            ""fields"": {
+                ""summary"": ""Cheese v1 2.0 issue"",
+                ""timetracking"": null,
+                ""issuetype"": {
+                    ""self"": ""http://localhost:8080/rest/api/2/issuetype/3"",
+                    ""id"": ""3"",
+                    ""description"": ""A task that needs to be done."",
+                    ""iconUrl"": ""http://localhost:8080/images/icons/task.gif"",
+                    ""name"": ""Task"",
+                    ""subtask"": false
+                },
+                ""transitions"": ""http://localhost:8080/rest/api/2/issue/BULK-47/transitions""
+            }
+        }
+    ]
+}";
+      Response.Headers.Add("Access-Control-Allow-Origin", "*");
+      return Json(JsonConvert.DeserializeObject<dynamic>(json));
     }
 
     // TODO: Abstract this into a generic proxy service

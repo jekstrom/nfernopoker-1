@@ -68,7 +68,7 @@ namespace nfernopoker
 
         if (env.IsDevelopment())
         {
-          spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+          spa.UseProxyToSpaDevelopmentServer("http://localhost:8081");
         }
       });
     }

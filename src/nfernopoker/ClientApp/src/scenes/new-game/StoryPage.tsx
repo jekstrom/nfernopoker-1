@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Paper } from "@material-ui/core";
+import { Paper, ListItem } from "@material-ui/core";
 import { firebaseConnect, isLoaded } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,6 +9,7 @@ import { Game, Story } from "../../core/models";
 import StoryForm from "./StoryForm";
 import StoryList from "./StoryList";
 import TfsStoryImport from "./TfsStoryImport";
+import JiraStoryImport from "./JiraStoryImport";
 
 interface IOwnProps {
   firebase: any;
@@ -30,6 +31,10 @@ const styles: any = (theme: any) => ({
     alignItems: 'center',
     flexDirection: 'column',
     margin: theme.spacing.unit
+  },
+  buttons: {
+    position: 'absolute',
+    right: '20px'
   }
 });
 
@@ -101,7 +106,10 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
 
     return (
       <Paper className={classes.container} >
-        <TfsStoryImport gameKey={this.getKey()}></TfsStoryImport>
+        <div className={classes.buttons}>
+          <TfsStoryImport gameKey={this.getKey()}></TfsStoryImport>
+          <JiraStoryImport gameKey={this.getKey()}></JiraStoryImport>
+        </div>
         <StoryForm game={this.props.game} story={this.state.story}
           onFormChange={(name: string, value: string) => this.onStoryChange(name, value)}
           onAdd={() => this.addStory()}

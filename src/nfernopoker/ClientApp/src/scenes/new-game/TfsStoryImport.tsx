@@ -1,9 +1,9 @@
 import * as React from "react";
 import { ChangeEvent } from "react";
 import { getWorkItemsByWiql } from "./actions";
-import { TextField, Button, Modal, Paper,withStyles } from "@material-ui/core";
+import { TextField, Button, Modal, Paper, withStyles } from "@material-ui/core";
 import { connect } from "react-redux";
-import { compose, bindActionCreators} from 'redux';
+import { compose, bindActionCreators } from 'redux';
 
 const styles = (theme: any) => ({
   paper: {
@@ -13,8 +13,8 @@ const styles = (theme: any) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing.unit * 4,
   },
-  tfsButton: {
-    position: 'absolute',
+  issuesButton: {
+    margin: theme.spacing.unit,
     right: '25px'
   }
 });
@@ -62,10 +62,10 @@ class TfsStoryImportComponent extends React.Component<any, any> {
   render(): JSX.Element {
     let state = this.state;
     const classes = this.props.classes;
-    
+
     return (
       <div>
-        <Button  className={classes.tfsButton} onClick={() => this.handleModalToggle(true)}>TFS/Azure Import</Button>
+        <Button className={classes.issuesButton} onClick={() => this.handleModalToggle(true)}>TFS/Azure Import</Button>
         <Modal
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
@@ -133,7 +133,7 @@ class TfsStoryImportComponent extends React.Component<any, any> {
               </Button>
 
             </form>
-        
+
           </Paper>
         </Modal>
       </div>
