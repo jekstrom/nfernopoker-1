@@ -46,6 +46,11 @@ module.exports = {
       }
     ]
   },
+  externals: {
+    'Config': JSON.stringify({
+      serverUrl: "http://localhost:52690"
+    })
+  },
   plugins: [
     new webpack.LoaderOptionsPlugin({
       options: {

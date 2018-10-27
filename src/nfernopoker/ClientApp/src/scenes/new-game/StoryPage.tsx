@@ -10,6 +10,7 @@ import StoryForm from "./StoryForm";
 import StoryList from "./StoryList";
 import TfsStoryImport from "./TfsStoryImport";
 import JiraStoryImport from "./JiraStoryImport";
+import { WithConfigs } from "../../core/components/withConfigs"
 
 interface IOwnProps {
   firebase: any;
@@ -37,6 +38,8 @@ const styles: any = (theme: any) => ({
     right: '20px'
   }
 });
+
+const JiraStoryImportWithConfig = WithConfigs(JiraStoryImport);
 
 class StoryPageComponent extends React.Component<IProps, ITempState> {
 
@@ -108,7 +111,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
       <Paper className={classes.container} >
         <div className={classes.buttons}>
           <TfsStoryImport gameKey={this.getKey()}></TfsStoryImport>
-          <JiraStoryImport gameKey={this.getKey()}></JiraStoryImport>
+          <JiraStoryImportWithConfig gameKey={this.getKey()}></JiraStoryImportWithConfig>
         </div>
         <StoryForm game={this.props.game} story={this.state.story}
           onFormChange={(name: string, value: string) => this.onStoryChange(name, value)}

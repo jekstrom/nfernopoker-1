@@ -78,7 +78,15 @@ class JiraStoryImportComponent extends React.Component<any, any> {
                 margin="normal"
               />
 
-              <Button color="primary" onClick={() => this.props.getJiraTickets(this.props.gameKey, this.state.jql)}>
+              <TextField id="projectid"
+                fullWidth={true}
+                label="Project Id"
+                value={state.projectid}
+                onChange={(e: any) => this.handleChange(e, 'projectid')}
+                margin="normal"
+              />
+
+              <Button color="primary" onClick={() => this.props.getJiraTickets(this.props.gameKey, this.state.jql, this.state.projectid, this.props.config)}>
                 Load Jira tickets
               </Button>
             </form>

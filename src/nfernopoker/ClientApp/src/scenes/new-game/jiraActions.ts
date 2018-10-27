@@ -3,11 +3,9 @@ import { Story } from "../../core/models";
 import { JiraTicket } from "../../core/models/jira-work-items";
 import { MessageTypes } from "../../core/actions/SnackMessage";
 
-const serverUrl = "http://localhost:52690"
-
-export function getJiraTickets(gameId: string, jql: string): ThunkAction<any, any, any, any> {
+export function getJiraTickets(gameId: string, jql: string, projectid: string, Config: any): ThunkAction<any, any, any, any> {
   return (dispatch, getState, getFirebase) =>
-    fetch(`${serverUrl}/api/jira/issues/search/${encodeURIComponent(jql)}`, {
+    fetch(`${Config.serverUrl}/api/jira/issues/search/${encodeURIComponent(jql)}`, {
       method: "GET"
     }).then(r => {
       r.json().then(results => {
