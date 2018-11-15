@@ -1,8 +1,19 @@
 import * as React from "react";
-import { Card, CardMedia, CardContent, Typography } from "@material-ui/core";
-import { Player } from "../core/models";
+import { Avatar, Card, CardActions, CardHeader, CardMedia, CardContent, Typography, IconButton } from "@material-ui/core";
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import { Game, Player } from "../core/models";
+import { withRouter } from "react-router";
+import { withStyles } from '@material-ui/core/styles';
+import { firebaseConnect, isLoaded } from "react-redux-firebase";
+import { connect } from "react-redux";
+import { compose } from "redux";
+import WhatshotIcon from '@material-ui/icons/Whatshot';
 
-interface IOwnProps { }
+interface IOwnProps {
+  game: Game;
+  location: any;
+}
 
 interface ITempState {
   players: Array<Player>
@@ -23,7 +34,9 @@ const styles = {
   },
   issuecontainer: {
     gridArea: 'issue-view',
-    alignSelf: 'stretch'
+    alignSelf: 'stretch',
+    maxHeight: 700,
+    overflow: 'auto'
   },
   cardcontainer: {
     gridArea: 'card-view',
@@ -43,9 +56,8 @@ const styles = {
 }
 
 class GameScreenComponent extends React.Component<IProps, ITempState> {
-
   constructor(props: any) {
-    super(props)
+    super(props);
 
     this.state = {
       players: [
@@ -63,6 +75,13 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
     };
   }
 
+  // TODO
+  // Show stories in this game
+  // allow user to click on story to see more details
+  // Allow a user to vote on each story
+  // allow moderator user to update the story with story points
+  //     this needs some sort of authz and generic 'story' backend thing to post new story points
+
   render() {
     const cards = this.state.players.map(p => (
       <Card key={p.name} style={styles.card}>
@@ -77,8 +96,33 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
         </CardContent>
       </Card>
     ));
+
+    let stories = [<div>Loading...</div>]
+    if (isLoaded(this.props.game) && this.props.game) {
+      stories = this.props.game.stories.map((story: any, i: number) => (
+        <Card key={story.id} style={styles.card}>
+          <CardHeader avatar={<Avatar src={story.iconUrl}><WhatshotIcon /></Avatar>} title={story.title} subheader="subheader" />
+          <CardContent>
+            <Typography gutterBottom={true} component="p">
+              {story.description}
+            </Typography>
+          </CardContent>
+          <CardActions disableActionSpacing>
+            <IconButton aria-label="Add to favorites">
+              <FavoriteIcon />
+            </IconButton>
+            <IconButton aria-label="Share">
+              <ShareIcon />
+            </IconButton>
+          </CardActions>
+        </Card>
+      ));
+    }
+
     return <div style={styles.layout}>
-      <section style={styles.issuecontainer} />
+      <section style={styles.issuecontainer}>
+        {stories}
+      </section>
       <section style={styles.cardcontainer} >
         {cards}
       </section>
@@ -86,4 +130,21 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
   }
 }
 
-export const GameScreen = GameScreenComponent;
+const mapStateToProps = (state: any, props: any) => {
+  return ({
+    game: state.firebase.data.games ? state.firebase.data.games[props.match.params.key] : null
+  });
+};
+
+//export const GameScreen = GameScreenComponent;
+export const GameScreen: React.ComponentClass<any> = compose<React.ComponentClass<any>>(
+  withStyles(styles),
+  withRouter,
+  firebaseConnect((props: IProps) => {
+    let key = props.location.pathname.substring(7, 27);
+    return [
+      "/games/" + key
+    ]
+  }),
+  connect(mapStateToProps)
+)(GameScreenComponent);
