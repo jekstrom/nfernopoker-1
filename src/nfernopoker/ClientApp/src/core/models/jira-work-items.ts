@@ -11,16 +11,24 @@ export interface JiraTicket {
 }
 
 export interface JiraTicketFields {
-  description: JiraDescription;
+  description: string;
+  priority: JiraPriority;
   project: JiraProject;
   summary: string;
+  customfield_10027: string
 }
 
 export interface JiraDescription {
   type: string;
   version: number;
   content: JiraContent;
+}
 
+export interface JiraPriority {
+  iconUrl: string;
+  id: string;
+  name: string;
+  self: string;
 }
 
 export interface JiraContent {

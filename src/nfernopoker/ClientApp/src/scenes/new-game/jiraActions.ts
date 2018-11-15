@@ -12,7 +12,7 @@ export function getJiraTickets(gameId: string, jql: string, projectid: string, C
         if (!results) {
           errorReceived("No results");
         }
-        let stories = mapJiraTicketsToStories(results.issues);
+        let stories = mapJiraIssuesToStories(JSON.parse(results).issues);
         getFirebase().ref(`/games/${gameId}`).update({ stories: stories })
           .then(() => {
             dispatch({ type: MessageTypes.ToastMessage, payload: `Added ${stories.length} Jira work items` });
@@ -22,16 +22,17 @@ export function getJiraTickets(gameId: string, jql: string, projectid: string, C
     }, e => errorReceived(e));
 }
 
-function mapJiraTicketsToStories(tickets: Array<JiraTicket>): Array<Story> {
-  return tickets.map(t => {
+function mapJiraIssuesToStories(issues: Array<JiraTicket>): Array<Story> {
+  return issues.map(t => {
     return {
       id: t.key,
       title: `${t.key} - ${t.fields.summary}`,
       type: "JIRA",
       url: t.self,
-      description: t.fields.description ? t.fields.description.content.content[0].text : "",
-      acceptanceCriteria: "",
-      storyPoints: ""
+      description: t.fields.description,
+      acceptanceCriteria: t.fields.customfield_10027,
+      storyPoints: "",
+      iconUrl: t.fields.priority.iconUrl
     }
   });
 }

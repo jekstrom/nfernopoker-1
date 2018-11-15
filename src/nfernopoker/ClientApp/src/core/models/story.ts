@@ -7,4 +7,5 @@ export interface Story {
   description: string;
   acceptanceCriteria: string;
   storyPoints: string;
+  iconUrl: string;
 }

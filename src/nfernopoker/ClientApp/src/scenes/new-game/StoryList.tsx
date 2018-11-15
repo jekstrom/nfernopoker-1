@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Avatar, List, ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, IconButton, withStyles } from "@material-ui/core";
+import { Avatar, Icon, List, ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, IconButton, withStyles } from "@material-ui/core";
 import { Game, Story } from "../../core/models";
 import DeleteIcon from '@material-ui/icons/Delete';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
@@ -42,7 +42,7 @@ class StoryListComponent extends React.Component<IProps, ITempState> {
       return (
         <ListItem key={i} onClick={() => this.handleItemSelected(story)}>
           <ListItemAvatar>
-            <Avatar>
+            <Avatar src={story.iconUrl}>
               <WhatshotIcon />
             </Avatar>
           </ListItemAvatar>

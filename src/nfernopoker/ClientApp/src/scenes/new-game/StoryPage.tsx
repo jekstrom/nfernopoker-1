@@ -58,7 +58,8 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
       url: "n/a",
       description: "",
       acceptanceCriteria: "",
-      storyPoints: "-666"
+      storyPoints: "-666",
+      iconUrl: ""
     };
   }
 
@@ -113,7 +114,9 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
           <TfsStoryImport gameKey={this.getKey()}></TfsStoryImport>
           <JiraStoryImportWithConfig gameKey={this.getKey()}></JiraStoryImportWithConfig>
         </div>
-        <StoryForm game={this.props.game} story={this.state.story}
+        <StoryForm
+          key={this.state.story.id}
+          game={this.props.game} story={this.state.story}
           onFormChange={(name: string, value: string) => this.onStoryChange(name, value)}
           onAdd={() => this.addStory()}
           onUpdate={() => this.updateStory()} />
