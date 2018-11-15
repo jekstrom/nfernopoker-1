@@ -8,4 +8,5 @@ export interface Story {
   acceptanceCriteria: string;
   storyPoints: string;
   iconUrl: string;
+  priority: string
 }

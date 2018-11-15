@@ -32,7 +32,8 @@ function mapJiraIssuesToStories(issues: Array<JiraTicket>): Array<Story> {
       description: t.fields.description,
       acceptanceCriteria: t.fields.customfield_10027,
       storyPoints: "",
-      iconUrl: t.fields.priority.iconUrl
+      iconUrl: t.fields.priority.iconUrl,
+      priority: t.fields.priority ? t.fields.priority.name : ""
     }
   });
 }

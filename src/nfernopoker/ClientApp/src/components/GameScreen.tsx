@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Avatar, Card, CardActions, CardHeader, CardMedia, CardContent, Typography, IconButton } from "@material-ui/core";
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import { Avatar, Card, CardActions, CardHeader, CardMedia, CardContent, Grid, List, ListItem, Typography, IconButton } from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
-import { Game, Player } from "../core/models";
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import { Game, Player, Story } from "../core/models";
 import { withRouter } from "react-router";
 import { withStyles } from '@material-ui/core/styles';
 import { firebaseConnect, isLoaded } from "react-redux-firebase";
@@ -16,7 +16,8 @@ interface IOwnProps {
 }
 
 interface ITempState {
-  players: Array<Player>
+  players: Array<Player>,
+  currentStory: Story
 }
 
 type IProps = IOwnProps;
@@ -34,8 +35,7 @@ const styles = {
   },
   issuecontainer: {
     gridArea: 'issue-view',
-    alignSelf: 'stretch',
-    maxHeight: 700,
+    maxHeight: 900,
     overflow: 'auto'
   },
   cardcontainer: {
@@ -46,6 +46,17 @@ const styles = {
   },
   card: {
     maxWidth: 400,
+    flex: '1 1 0',
+    margin: '8px'
+  },
+  issue: {
+    maxWidth: 600,
+    flex: '1 1 0',
+    margin: '8px'
+  },
+  issueDetails: {
+    maxWidth: 1600,
+    maxHeight: 1000,
     flex: '1 1 0',
     margin: '8px'
   },
@@ -71,8 +82,25 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
         { name: 'Tobias', email: "" },
         { name: 'Lindsay', email: "" },
         { name: 'Buster', email: "" },
-      ]
+      ],
+      currentStory: {
+        id: "",
+        title: "",
+        type: "",
+        url: "n/a",
+        description: "",
+        acceptanceCriteria: "",
+        storyPoints: "-666",
+        iconUrl: "",
+        priority: ""
+      }
     };
+  }
+
+  handleStorySelected(story: Story): void {
+    let newState = { ... this.state };
+    newState.currentStory = story;
+    this.setState(newState);
   }
 
   // TODO
@@ -100,28 +128,51 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
     let stories = [<div>Loading...</div>]
     if (isLoaded(this.props.game) && this.props.game) {
       stories = this.props.game.stories.map((story: any, i: number) => (
-        <Card key={story.id} style={styles.card}>
-          <CardHeader avatar={<Avatar src={story.iconUrl}><WhatshotIcon /></Avatar>} title={story.title} subheader="subheader" />
-          <CardContent>
-            <Typography gutterBottom={true} component="p">
-              {story.description}
-            </Typography>
-          </CardContent>
-          <CardActions disableActionSpacing>
-            <IconButton aria-label="Add to favorites">
-              <FavoriteIcon />
-            </IconButton>
-            <IconButton aria-label="Share">
-              <ShareIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
+        <ListItem key={story.id} button onClick={() => this.handleStorySelected(story)}>
+          <Card key={story.id} style={styles.issue}>
+            <CardHeader avatar={<Avatar src={story.iconUrl} alt={`Priority: ${story.priority}`}><WhatshotIcon /></Avatar>} title={story.title} subheader={`Priority: ${story.priority}`} />
+            <CardContent>
+              <Typography gutterBottom={true} component="p">
+                {story.description}
+              </Typography>
+            </CardContent>
+            <CardActions disableActionSpacing>
+              <IconButton aria-label="Open in new window">
+                <OpenInNew />
+              </IconButton>
+              <IconButton aria-label="Share">
+                <ShareIcon />
+              </IconButton>
+            </CardActions>
+          </Card>
+        </ListItem>
       ));
     }
 
     return <div style={styles.layout}>
-      <section style={styles.issuecontainer}>
-        {stories}
+      <section>
+        <Grid container justify="flex-start" alignItems="flex-start">
+          <Grid item xs={4} style={styles.issuecontainer}>
+            <List>
+              {stories}
+            </List>
+          </Grid>
+          <Grid item xs={8}>
+            <Card key="issue-details" style={styles.issueDetails}>
+              <CardHeader avatar={
+                <Avatar src={this.state.currentStory.iconUrl}><WhatshotIcon /></Avatar>
+              }
+                title={this.state.currentStory.title ? this.state.currentStory.title : "Select a story."}
+                subheader={this.state.currentStory.priority ? `Priority: ${this.state.currentStory.priority}` : ""}
+              />
+              <CardContent>
+                <Typography gutterBottom={true} component="p">
+                  {this.state.currentStory ? this.state.currentStory.description : ""}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </section>
       <section style={styles.cardcontainer} >
         {cards}
