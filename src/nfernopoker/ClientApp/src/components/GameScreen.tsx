@@ -52,6 +52,7 @@ const styles = {
   },
   issue: {
     maxWidth: 600,
+    display: 'flex',
     flex: '1 1 0',
     margin: '8px'
   },
@@ -67,7 +68,10 @@ const styles = {
   pokerCard: {
     width: 60,
     height: 100,
-    lineHeight: 8
+    lineHeight: 8,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   image: {
     height: 0,
