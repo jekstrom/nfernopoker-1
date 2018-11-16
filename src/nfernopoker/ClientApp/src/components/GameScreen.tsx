@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Avatar, Card, CardActions, CardHeader, CardMedia, CardContent, Grid, List, ListItem, Typography, IconButton } from "@material-ui/core";
+import { Avatar, Card, CardActions, CardHeader, CardMedia, CardContent, Divider, Grid, List, ListItem, Typography, Paper, IconButton } from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import Comment from '@material-ui/icons/Comment';
 import { Game, Player, Story } from "../core/models";
 import { withRouter } from "react-router";
 import { withStyles } from '@material-ui/core/styles';
@@ -35,7 +36,7 @@ const styles = {
   },
   issuecontainer: {
     gridArea: 'issue-view',
-    maxHeight: 900,
+    maxHeight: 700,
     overflow: 'auto'
   },
   cardcontainer: {
@@ -54,11 +55,19 @@ const styles = {
     flex: '1 1 0',
     margin: '8px'
   },
+  acceptanceCriteria: {
+    margin: '8px'
+  },
   issueDetails: {
     maxWidth: 1600,
     maxHeight: 1000,
     flex: '1 1 0',
     margin: '8px'
+  },
+  pokerCard: {
+    width: 60,
+    height: 100,
+    lineHeight: 8
   },
   image: {
     height: 0,
@@ -126,6 +135,7 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
     ));
 
     let stories = [<div>Loading...</div>]
+    let pokerCards = [<p></p>];
     if (isLoaded(this.props.game) && this.props.game) {
       stories = this.props.game.stories.map((story: any, i: number) => (
         <ListItem key={story.id} button onClick={() => this.handleStorySelected(story)}>
@@ -147,7 +157,55 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
           </Card>
         </ListItem>
       ));
+
+      pokerCards = this.props.game.cards.value.map((card: number) => (
+        <ListItem key={card} button>
+          <Paper style={styles.pokerCard}>
+            <Typography variant="h5" component="h3">
+              {card}
+            </Typography>
+          </Paper>
+        </ListItem>
+      ));
     }
+
+
+
+    let issueDetails =
+      <Grid item xs={8}>
+        <Card key="issue-details" style={styles.issueDetails}>
+          <CardHeader
+            avatar={
+              <Avatar src={this.state.currentStory.iconUrl}><WhatshotIcon /></Avatar>
+            }
+            title={this.state.currentStory.title ? this.state.currentStory.title : "Select a story."}
+            subheader={this.state.currentStory.priority ? `Priority: ${this.state.currentStory.priority}` : ""}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h6" component="h3">
+              Description
+            </Typography>
+            <Typography gutterBottom={true} component="p">
+              {this.state.currentStory ? this.state.currentStory.description : ""}
+            </Typography>
+            <Divider light={true} />
+            <Typography gutterBottom variant="h6" component="h3">
+              Acceptance Criteria
+            </Typography>
+            <pre>
+              {this.state.currentStory.acceptanceCriteria}
+            </pre>
+          </CardContent>
+          <CardActions>
+            <IconButton aria-label="Add comment">
+              <Comment />
+            </IconButton>
+          </CardActions>
+          <CardActions>
+            {pokerCards}
+          </CardActions>
+        </Card>
+      </Grid>;
 
     return <div style={styles.layout}>
       <section>
@@ -157,21 +215,7 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
               {stories}
             </List>
           </Grid>
-          <Grid item xs={8}>
-            <Card key="issue-details" style={styles.issueDetails}>
-              <CardHeader avatar={
-                <Avatar src={this.state.currentStory.iconUrl}><WhatshotIcon /></Avatar>
-              }
-                title={this.state.currentStory.title ? this.state.currentStory.title : "Select a story."}
-                subheader={this.state.currentStory.priority ? `Priority: ${this.state.currentStory.priority}` : ""}
-              />
-              <CardContent>
-                <Typography gutterBottom={true} component="p">
-                  {this.state.currentStory ? this.state.currentStory.description : ""}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+          {issueDetails}
         </Grid>
       </section>
       <section style={styles.cardcontainer} >
