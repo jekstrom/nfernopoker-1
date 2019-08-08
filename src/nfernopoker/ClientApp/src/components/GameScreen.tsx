@@ -33,7 +33,7 @@ const styles = {
     gridColumnGap: 10,
     gridRowGap: 10,
     width: '100%',
-    height: '60vh'
+    height: '70vh'
   },
   storylistcontainer: {
     gridArea: 'storyList',
@@ -52,9 +52,9 @@ const styles = {
   },
   cardcontainer: {
     gridArea: 'cards',
-    alignSelf: 'stretch',
     display: 'flex',
-    justifyContent: 'space-around'
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
   },
   cardflexbox: {
     display: 'flex',
@@ -168,7 +168,7 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
           }
         </section>
 
-        <section style={styles.playerconlllllllltainer} >
+        <section style={styles.playercontainer} >
           {players}
         </section>
 
