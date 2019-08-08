@@ -1,16 +1,16 @@
 import * as React from "react";
 import { Card, CardMedia, CardContent, Typography, Button, Grid } from "@material-ui/core";
-import { connect } from "react-redux";
-import { compose } from "redux";
-import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
-import { withRouter } from "react-router";
+import { isLoaded, isEmpty } from "react-redux-firebase";
 import { withStyles } from '@material-ui/core/styles';
+import { Link } from "react-router-dom";
 
 interface IOwnProps {
-  firebase: any;
-  games: Array<any>;
-  history: any;
-  classes: any;
+  firebase: any
+  games: Array<any>,
+  history: any,
+  classes: any,
+  onRemoveItem(key: string): void,
+  onPlayGame(key: string): void
 }
 
 type IProps = IOwnProps;
@@ -31,22 +31,11 @@ const styles = {
   }
 }
 
-class GamesScreenComponent extends React.Component<IProps, any> {
+
+class GamesPage extends React.Component<IProps> {
 
   constructor(props: IProps) {
     super(props);
-  }
-
-  playGame(key: string) {
-    this.props.history.push(`/games/${key}`);
-  }
-
-  removeItem(key: string) {
-    this.props.firebase.remove(`/games/${key}`);
-  }
-
-  editStories(key: string) {
-    this.props.history.push(`/games/${key}/stories`);
   }
 
   render() {
@@ -57,6 +46,7 @@ class GamesScreenComponent extends React.Component<IProps, any> {
     }
 
     let cards = new Array<any>();
+
     if (!isEmpty(this.props.games) && isLoaded(this.props.games)) {
       cards = Object.keys(this.props.games).map((key, index) => {
         let game = this.props.games[key];
@@ -64,21 +54,21 @@ class GamesScreenComponent extends React.Component<IProps, any> {
           <Card>
             <CardMedia component="img"
               style={styles.image}
-              src="https://tse3.mm.bing.net/th?id=OIP.iUJC2RFnRl_JWM7TuocoUgHaJl&pid=Api"
+              src="/public/img/planning_game.jpg"
             />
             <CardContent>
               <Typography gutterBottom={true}>
                 {game.title}
               </Typography>
-              <Button color="secondary" onClick={() => this.removeItem(key)}>
+              <Button color="secondary" onClick={() => this.props.onRemoveItem(key)}>
                 Delete
-            </Button>
-              <Button color="primary" onClick={() => this.playGame(key)}>
+              </Button>
+              <Button color="primary" onClick={() => this.props.onPlayGame(key)}>
                 Play
-            </Button>
-            <Button color="primary" onClick={() => this.editStories(key)}>
-                Stories
-            </Button>
+              </Button>
+         
+              <Link to={`games/${key}/stories`}> STORIES </Link>
+
             </CardContent>
           </Card>
         </Grid>)
@@ -94,14 +84,4 @@ class GamesScreenComponent extends React.Component<IProps, any> {
   }
 }
 
-export const GamesScreen: React.ComponentClass<any> = compose<React.ComponentClass<any>>(
-  withStyles(styles),
-  withRouter,
-  firebaseConnect((props: IProps) => [
-    'games',
-  ]),
-  connect((state: any) => ({
-    games: state.firebase.data.games,
-    profile: state.firebase.profile
-  })
-  ))(GamesScreenComponent)
+export default withStyles(styles)(GamesPage)

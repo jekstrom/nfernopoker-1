@@ -1,21 +1,26 @@
 import * as React from 'react';
-import { Divider, Drawer, MenuItem } from '@material-ui/core';
-import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
-import orange from '@material-ui/core/colors/orange';
-import AppHeader from './AppHeader';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux'
-import { Component } from 'react';
-import { firebaseConnect, isEmpty } from 'react-redux-firebase'; //isEmpty
 import { compose } from 'redux';
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom';
+import { Divider, Drawer, MenuItem, IconButton, MuiThemeProvider, Theme, createMuiTheme, withStyles } from '@material-ui/core';
+import { ChevronLeft, ChevronRight } from '@material-ui/icons';
+import orange from '@material-ui/core/colors/orange';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
+import classNames from 'classnames';
+import AppHeader from './AppHeader';
 import { SnackWrapper } from './SnackWrapper';
 
-export interface ILayoutProps {
+export interface IOwnProps {
   classes: any;
   children: any;
   auth: any;
-  history: any;
 }
+
+interface ITempState {
+  open: boolean
+}
+
+type IProps = IOwnProps;
 
 const theme = createMuiTheme({
   palette: {
@@ -26,72 +31,113 @@ const theme = createMuiTheme({
   },
 });
 
-const styles: any = (theme: any) => ({
+const drawerWidth = 240;
+
+const styles = (theme: Theme) => ({
   root: {
-    display: 'grid',
-    grid: `
-      [navrow-start] "appbar appbar" 64px [navrow-end]
-      [mainrow-start] "drawer main" calc(100vh - 64px) [mainrow-end]
-      / 256px 1fr
-    `,
-    zIndex: 1,
-    overflow: 'hidden',
-    position: 'relative',
+    display: 'flex',
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
   },
   drawerPaper: {
-    position: 'relative',
-    minWidth: 240
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
   },
   content: {
-    backgroundColor: theme.palette.background.default,
-    backgroundImage: "url(" + require('../../../public/img/hell.jpg') + ")",
+    top: 56,
+    position: 'relative',
+    flexGrow: 1,
     padding: theme.spacing.unit * 3,
-    minWidth: 0, // So the Typography noWrap works
-    filter: 'saturate(125%)',
-    gridArea: 'main'
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: -drawerWidth,
   },
-  toolbar: theme.mixins.toolbar
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  },
 });
 
-class Layout extends Component<ILayoutProps> {
+class Layout extends React.Component<IProps, ITempState> {
 
   constructor(
-    public props: ILayoutProps
+    public props: IOwnProps
   ) {
     super(props)
+    this.state = {
+      open: false,
+    };
+  }
+
+  handleDrawerToggle() {
+    this.setState((state: any) => ({ open: !state.open }));
   }
 
   render() {
-    let loggedIn = !isEmpty(this.props.auth);
+    let { auth, classes } = this.props;
+    let { open } = this.state;
+
+    let drawerContent = (
+      <div>
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={() => this.handleDrawerToggle()}>
+            {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
+          </IconButton>
+        </div>
+        <Divider />
+        <Link to={'/'}><MenuItem selected={window.location.pathname === '/'}>Home</MenuItem></Link>
+        {isEmpty(auth) &&
+          <Link to={'/'}><MenuItem selected={window.location.pathname === '/'}>Login</MenuItem></Link>
+        }
+        <Divider />
+        {
+          !isEmpty(auth) &&
+          <React.Fragment>
+            <Link to={'/teams'}><MenuItem selected={window.location.pathname === '/teams'}>Teams</MenuItem></Link>
+            <Link to={'/games/new'}><MenuItem selected={window.location.pathname === '/game/new'}>New Game</MenuItem></Link>
+            <Link to={'/games'}><MenuItem selected={window.location.pathname === '/games'}>All Games</MenuItem></Link>
+          </React.Fragment>
+        }
+      </div>
+    );
 
     return (
       <MuiThemeProvider theme={theme}>
-        <div className={this.props.classes.root} >
-          <AppHeader />
+        <div className={classes.root}>
+          <AppHeader drawerOpen={open} onMenuClick={() => this.handleDrawerToggle()} />
           <Drawer
-            variant="permanent"
-            style={{ gridArea: 'drawer' }}
+            className={classes.drawer}
+            variant="persistent"
+            anchor="left"
+            open={open}
             classes={{
-              paper: this.props.classes.drawerPaper
+              paper: classes.drawerPaper,
             }}
           >
-            {!loggedIn &&
-              <Link to={'/'}><MenuItem selected={window.location.pathname === '/'}>Login</MenuItem></Link>
-            }
-            <Divider />
-            {loggedIn &&
-              (<div>
-                <Link to={'/teams'}><MenuItem selected={window.location.pathname === '/teams'}>Teams</MenuItem></Link>
-                <Link to={'/games/new'}><MenuItem selected={window.location.pathname === '/game/new'}>New Game</MenuItem></Link>
-                <Link to={'/games'}><MenuItem selected={window.location.pathname === '/games'}>All Games</MenuItem></Link>
-              </div>)
-            }
+            {drawerContent}
           </Drawer>
-          <main className={this.props.classes.content}>
+          <main
+            className={classNames(classes.content, {
+              [classes.contentShift]: open,
+            })}
+          >
             {this.props.children}
           </main>
         </div>
-        <SnackWrapper classes={this.props.classes} />
+        <SnackWrapper classes={classes} />
       </MuiThemeProvider>
     );
   }

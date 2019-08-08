@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SnackWrapper Component should render without error 1`] = `
+SnackWrapperComponent {
+  "context": Object {},
+  "props": Object {
+    "classes": Object {},
+    "clear": [Function],
+    "message": "hi mom",
+    "open": true,
+  },
+  "refs": Object {},
+  "setState": [Function],
+  "state": null,
+  "updater": Updater {
+    "_callbacks": Array [],
+    "_renderer": ReactShallowRenderer {
+      "_context": Object {},
+      "_element": <SnackWrapperComponent
+        classes={Object {}}
+        clear={[Function]}
+        message="hi mom"
+        open={true}
+      />,
+      "_forcedUpdate": false,
+      "_instance": [Circular],
+      "_newState": null,
+      "_rendered": <WithStyles(Snackbar)
+        action={
+          Array [
+            <WithStyles(IconButton)
+              aria-label="Close"
+              color="inherit"
+              onClick={[Function]}
+            >
+              <pure(CloseIcon) />
+            </WithStyles(IconButton)>,
+          ]
+        }
+        autoHideDuration={5000}
+        message={
+          <span
+            id="message-id"
+          >
+            hi mom
+          </span>
+        }
+        open={true}
+      />,
+      "_rendering": false,
+      "_updater": [Circular],
+    },
+  },
+  Symbol(enzyme.__setState__): [Function],
+}
+`;

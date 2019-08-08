@@ -54,4 +54,5 @@ const mapDispatchToProps = (dispatch: redux.Dispatch<redux.Action>): IConnectedD
   }
 });
 
+export const SnackWrapperTestComp = SnackWrapperComponent;
 export const SnackWrapper: React.ComponentClass<ISnackWrapperProps> = connect(mapStateToProps, mapDispatchToProps)(SnackWrapperComponent);

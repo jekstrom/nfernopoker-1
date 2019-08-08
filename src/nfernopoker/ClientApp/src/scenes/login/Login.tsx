@@ -1,12 +1,11 @@
 import * as React from "react";
-import * as redux from 'redux';
 import { Button, TextField, CardContent, CardActions, Typography } from '@material-ui/core';
 import { Component, MouseEvent, ChangeEvent } from "react";
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router";
 import { withFirebase } from "react-redux-firebase";
-import { MessageTypes } from "../../core/actions/SnackMessage";
+import { sendMessageAction } from "./actions";
 
 interface ILoginProps {
   classes: any;
@@ -19,7 +18,7 @@ interface ISnackMessageProps {
 }
 
 interface ILoginState {
-  username: string;
+  email: string;
   password: string;
 }
 interface IFirebase {
@@ -35,66 +34,70 @@ class LoginComponent extends Component<IProps, ILoginState> {
     public props: IProps
   ) {
     super(props);
-    this.state = { username: "", password: "" };
+    this.state = {
+      email: "",
+      password: ""
+    };
   }
 
-  public storeUser = (event: ChangeEvent<HTMLInputElement>) => this.setState({ username: event.target.value });
-  public storePwrd = (event: ChangeEvent<HTMLInputElement>) => this.setState({ password: event.target.value });
+  public handleFormChanged(event: ChangeEvent<HTMLInputElement>, name: string): void {
+    let newState = { ...this.state };
+    newState[name] = event.target.value;
+    this.setState(newState);
+  }
 
   public login = (event: MouseEvent<any>) => {
     event.preventDefault();
     event.stopPropagation();
-    try {
-      this.props.firebase.login({
-        email: this.state.username,
-        password: this.state.password
-      }).then(() => {
-        this.props.history.push('/games');
-      }, (e: any) => {
-        this.props.sendMessage(e.message);
-      });
-    } catch (ex) {
-      if (ex.message == 'Sign in failed "Email" must be a valid string.') {
-        this.props.sendMessage("Email: must be a valid string.");
-        return;
-      }
-      if (ex.message == 'Sign in failed: "Password" must be a valid string.') {
-        this.props.sendMessage("Password: must be a valid string.");
-        return;
-      }
+
+    this.props.firebase.login({
+      email: this.state.email,
+      password: this.state.password
+    }).then(() => {
+      this.props.history.push('/games');
+    }).catch((ex: any) => {
       this.props.sendMessage(ex.message);
-    }
+    });
   }
 
   public render() {
     const { classes } = this.props;
+    let isDisabled = !(this.state.email && this.state.password);
     return (
-      <form>
+      <form id="login-form" onSubmit={this.login}>
         <CardContent>
           <Typography className={classes.title} color="textSecondary">
             Log in to feel the burn
           </Typography>
           <TextField
-            id="username"
+            id="email"
             autoComplete="current-user"
             fullWidth={true}
             label="Email"
-            onChange={this.storeUser}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFormChanged(event, "email")}
             className={classes.button}
           />
           <TextField
-            id="pword"
+            id="password"
             fullWidth={true}
             type="password"
             label="Password"
-            onChange={this.storePwrd}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFormChanged(event, "password")}
             className={classes.button}
           />
         </CardContent>
         <CardActions>
-          <Button type="submit" className={classes.button} onClick={this.login} variant="contained"
+          <Button
+            id="submit"
+            type="submit"
+            disabled={isDisabled}
+            className={classes.button}
+            variant="contained"
             style={{ marginLeft: '16px' }} title="Login" color="primary">Login</Button>
-          <Button onClick={this.props.onSecondaryButton} size="small">
+          <Button
+            id="secondary-btn"
+            onClick={this.props.onSecondaryButton}
+            size="small">
             {this.props.secondaryButtonText}
           </Button>
         </CardActions>
@@ -103,14 +106,10 @@ class LoginComponent extends Component<IProps, ILoginState> {
   }
 }
 
-const mapDispatchToProps = (dispatch: redux.Dispatch<redux.Action>): any => ({
-  sendMessage: (message: string) => {
-    dispatch({ type: MessageTypes.ToastMessage, payload: message });
-  }
-});
+export const LoginTestComp = LoginComponent;
 
 export const Login: React.ComponentClass<ILoginProps> = compose<React.ComponentClass<ILoginProps>>(
   withFirebase,
   withRouter,
-  connect(null, mapDispatchToProps)
+  connect(null, { sendMessage: sendMessageAction })
 )(LoginComponent)

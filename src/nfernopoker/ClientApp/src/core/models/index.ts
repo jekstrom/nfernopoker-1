@@ -1,3 +1,4 @@
+export * from './chat';
 export * from './game';
 export * from './team';
 export * from './story';

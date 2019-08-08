@@ -1,0 +1,139 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Register Component should render without error 1`] = `
+RegisterComponent {
+  "context": Object {},
+  "handleSubmit": [Function],
+  "props": Object {
+    "classes": Object {},
+    "firebase": Object {
+      "createUser": [MockFunction],
+    },
+    "history": Object {
+      "push": [MockFunction],
+    },
+    "location": [MockFunction],
+    "match": [MockFunction],
+    "onSecondaryButton": [MockFunction],
+    "params": [MockFunction],
+    "secondaryButtonText": "Login instead",
+    "sendMessage": [MockFunction],
+  },
+  "refs": Object {},
+  "setState": [Function],
+  "state": Object {
+    "email": "",
+    "firstName": "",
+    "lastName": "",
+    "password": "",
+  },
+  "updater": Updater {
+    "_callbacks": Array [],
+    "_renderer": ReactShallowRenderer {
+      "_context": Object {},
+      "_element": <RegisterComponent
+        classes={Object {}}
+        firebase={
+          Object {
+            "createUser": [MockFunction],
+          }
+        }
+        history={
+          Object {
+            "push": [MockFunction],
+          }
+        }
+        location={[MockFunction]}
+        match={[MockFunction]}
+        onSecondaryButton={[MockFunction]}
+        params={[MockFunction]}
+        secondaryButtonText="Login instead"
+        sendMessage={[MockFunction]}
+      />,
+      "_forcedUpdate": false,
+      "_instance": [Circular],
+      "_newState": null,
+      "_rendered": <React.Fragment>
+        <form
+          id="register-form"
+          onSubmit={[Function]}
+        >
+          <WithStyles(CardContent)>
+            <WithStyles(Typography)
+              color="textSecondary"
+            >
+              Create a new account
+            </WithStyles(Typography)>
+            <TextField
+              fullWidth={true}
+              id="first-name"
+              label="First Name"
+              onChange={[Function]}
+              required={true}
+              select={false}
+              variant="standard"
+            />
+            <TextField
+              fullWidth={true}
+              id="last-name"
+              label="Last Name"
+              onChange={[Function]}
+              required={true}
+              select={false}
+              variant="standard"
+            />
+            <TextField
+              fullWidth={true}
+              id="email"
+              label="Email"
+              onChange={[Function]}
+              required={true}
+              select={false}
+              type="email"
+              variant="standard"
+            />
+            <TextField
+              fullWidth={true}
+              id="password"
+              label="Password"
+              onChange={[Function]}
+              required={true}
+              select={false}
+              type="password"
+              variant="standard"
+            />
+          </WithStyles(CardContent)>
+          <WithStyles(CardActions)>
+            <WithStyles(Button)
+              color="primary"
+              disabled={true}
+              form="register-form"
+              id="submit"
+              style={
+                Object {
+                  "marginLeft": "16px",
+                }
+              }
+              title="Register"
+              type="submit"
+              variant="contained"
+            >
+              Register
+            </WithStyles(Button)>
+            <WithStyles(Button)
+              id="secondary-btn"
+              onClick={[MockFunction]}
+              size="small"
+            >
+              Login instead
+            </WithStyles(Button)>
+          </WithStyles(CardActions)>
+        </form>
+      </React.Fragment>,
+      "_rendering": false,
+      "_updater": [Circular],
+    },
+  },
+  Symbol(enzyme.__setState__): [Function],
+}
+`;

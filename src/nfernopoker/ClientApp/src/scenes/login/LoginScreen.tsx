@@ -3,7 +3,6 @@ import { Component } from 'react';
 import { Login } from './Login';
 import { Register } from './Register';
 import { Grid, withStyles, Card } from "@material-ui/core";
-import { withRouter, RouteComponentProps } from "react-router";
 
 interface ILoginScreenState {
   isLogin: boolean;
@@ -11,8 +10,6 @@ interface ILoginScreenState {
 
 interface ILoginScreenProps {
   classes: any;
-  firebase: any;
-  router: any;
 }
 
 const styles: any = (theme: any) => ({
@@ -25,29 +22,34 @@ const styles: any = (theme: any) => ({
     minWidth: "300px",
   },
   root: {
-    height: "100%"
+    height: "100%",
+    backgroundColor: theme.palette.background.default,
+    backgroundImage: "url(" + require('../../../public/img/inferno.jpg') + ")",
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
   }
 });
 
-class LoginScreen extends Component<ILoginScreenProps & RouteComponentProps<any>, ILoginScreenState> {
+class LoginScreen extends Component<ILoginScreenProps, ILoginScreenState> {
 
   public state: ILoginScreenState;
 
   constructor(
-    public props: ILoginScreenProps & RouteComponentProps<any>
+    public props: ILoginScreenProps
   ) {
     super(props);
     this.state = { isLogin: true };
   }
 
   public render() {
+    const classes = this.props.classes;
     const loginScreen =
       this.state.isLogin ?
-        <Login classes={this.props.classes} secondaryButtonText='No account?' onSecondaryButton={this.toggleState} /> :
-        <Register classes={this.props.classes} secondaryButtonText='Log in instead' onSecondaryButton={this.toggleState} />
+        <Login classes={classes} secondaryButtonText='No account?' onSecondaryButton={this.toggleState} /> :
+        <Register classes={classes} secondaryButtonText='Log in instead' onSecondaryButton={this.toggleState} />
     return (
-      <Grid className={this.props.classes.root} container={true} alignItems="center" alignContent="center" justify="center" direction="row">
-        <Grid item={true} className={this.props.classes.login}>
+      <Grid className={classes.root} container={true} alignItems="center" alignContent="center" justify="center" direction="row">
+        <Grid item={true} className={classes.login}>
           <Card>
             {loginScreen}
           </Card>
@@ -57,11 +59,13 @@ class LoginScreen extends Component<ILoginScreenProps & RouteComponentProps<any>
   }
 
   private toggleState = () => {
-    const newState = {
+    this.setState({
       isLogin: !this.state.isLogin
-    };
-    this.setState(newState);
+    });
   }
 
 }
-export default withStyles(styles)(withRouter(LoginScreen));
+
+export const LoginScreenTestComp = LoginScreen;
+
+export default withStyles(styles)(LoginScreen);

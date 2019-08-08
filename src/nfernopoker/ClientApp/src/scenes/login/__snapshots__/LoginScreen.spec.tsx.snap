@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Screen should render without error 1`] = `
+LoginScreen {
+  "context": Object {},
+  "props": Object {
+    "classes": Object {},
+  },
+  "refs": Object {},
+  "setState": [Function],
+  "state": Object {
+    "isLogin": true,
+  },
+  "toggleState": [Function],
+  "updater": Updater {
+    "_callbacks": Array [],
+    "_renderer": ReactShallowRenderer {
+      "_context": Object {},
+      "_element": <LoginScreen
+        classes={Object {}}
+      />,
+      "_forcedUpdate": false,
+      "_instance": [Circular],
+      "_newState": null,
+      "_rendered": <WithStyles(Grid)
+        alignContent="center"
+        alignItems="center"
+        container={true}
+        direction="row"
+        justify="center"
+      >
+        <WithStyles(Grid)
+          item={true}
+        >
+          <WithStyles(Card)>
+            <withFirebase(withRouter(Connect(LoginComponent)))
+              classes={Object {}}
+              onSecondaryButton={[Function]}
+              secondaryButtonText="No account?"
+            />
+          </WithStyles(Card)>
+        </WithStyles(Grid)>
+      </WithStyles(Grid)>,
+      "_rendering": false,
+      "_updater": [Circular],
+    },
+  },
+  Symbol(enzyme.__setState__): [Function],
+}
+`;

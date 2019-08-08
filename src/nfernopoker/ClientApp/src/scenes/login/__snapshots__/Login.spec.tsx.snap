@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Component should render without error 1`] = `
+LoginComponent {
+  "context": Object {},
+  "login": [Function],
+  "props": Object {
+    "classes": Object {},
+    "firebase": Object {
+      "login": [MockFunction],
+    },
+    "history": Object {
+      "push": [MockFunction],
+    },
+    "location": [MockFunction],
+    "match": [MockFunction],
+    "onSecondaryButton": [MockFunction],
+    "params": [MockFunction],
+    "secondaryButtonText": "Login instead",
+    "sendMessage": [MockFunction],
+  },
+  "refs": Object {},
+  "setState": [Function],
+  "state": Object {
+    "email": "",
+    "password": "",
+  },
+  "updater": Updater {
+    "_callbacks": Array [],
+    "_renderer": ReactShallowRenderer {
+      "_context": Object {},
+      "_element": <LoginComponent
+        classes={Object {}}
+        firebase={
+          Object {
+            "login": [MockFunction],
+          }
+        }
+        history={
+          Object {
+            "push": [MockFunction],
+          }
+        }
+        location={[MockFunction]}
+        match={[MockFunction]}
+        onSecondaryButton={[MockFunction]}
+        params={[MockFunction]}
+        secondaryButtonText="Login instead"
+        sendMessage={[MockFunction]}
+      />,
+      "_forcedUpdate": false,
+      "_instance": [Circular],
+      "_newState": null,
+      "_rendered": <form
+        id="login-form"
+        onSubmit={[Function]}
+      >
+        <WithStyles(CardContent)>
+          <WithStyles(Typography)
+            color="textSecondary"
+          >
+            Log in to feel the burn
+          </WithStyles(Typography)>
+          <TextField
+            autoComplete="current-user"
+            fullWidth={true}
+            id="email"
+            label="Email"
+            onChange={[Function]}
+            required={false}
+            select={false}
+            variant="standard"
+          />
+          <TextField
+            fullWidth={true}
+            id="password"
+            label="Password"
+            onChange={[Function]}
+            required={false}
+            select={false}
+            type="password"
+            variant="standard"
+          />
+        </WithStyles(CardContent)>
+        <WithStyles(CardActions)>
+          <WithStyles(Button)
+            color="primary"
+            disabled={true}
+            id="submit"
+            style={
+              Object {
+                "marginLeft": "16px",
+              }
+            }
+            title="Login"
+            type="submit"
+            variant="contained"
+          >
+            Login
+          </WithStyles(Button)>
+          <WithStyles(Button)
+            id="secondary-btn"
+            onClick={[MockFunction]}
+            size="small"
+          >
+            Login instead
+          </WithStyles(Button)>
+        </WithStyles(CardActions)>
+      </form>,
+      "_rendering": false,
+      "_updater": [Circular],
+    },
+  },
+  Symbol(enzyme.__setState__): [Function],
+}
+`;

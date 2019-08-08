@@ -1,12 +1,11 @@
 import * as React from "react";
-import * as redux from "redux";
-import { Component, MouseEvent, ChangeEvent } from 'react';
+import { Component, ChangeEvent } from 'react';
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { withFirebase } from "react-redux-firebase";
-import { RouteComponentProps, withRouter } from "react-router";
-import { Button, TextField, CardContent, CardActions, Typography } from '@material-ui/core';
-import { MessageTypes } from "../../core/actions/SnackMessage";
+import { withRouter, RouteComponentProps } from "react-router";
+import { Button, TextField, CardContent, CardActions, Typography } from "@material-ui/core";
+import { sendMessageAction } from "./actions";
 
 interface ILocalProps {
   classes: any;
@@ -28,10 +27,12 @@ interface IConnectedDispatch {
 type IProps = ILocalProps & IConnectedDispatch & RouteComponentProps<any> & IFirebase;
 
 class RegisterComponent extends Component<IProps, ILocalState> {
+
   constructor(
     public props: IProps
   ) {
     super(props);
+
     this.state = {
       firstName: '',
       lastName: '',
@@ -40,84 +41,97 @@ class RegisterComponent extends Component<IProps, ILocalState> {
     };
   }
 
-  public setFirst = (event: ChangeEvent<HTMLInputElement>) => this.setState({ firstName: event.target.value });
-  public setLast = (event: ChangeEvent<HTMLInputElement>) => this.setState({ lastName: event.target.value });
-  public setEmail = (event: ChangeEvent<HTMLInputElement>) => this.setState({ email: event.target.value });
-  public setPassword = (event: ChangeEvent<HTMLInputElement>) => this.setState({ password: event.target.value });
-  public handleSubmit = (event: any) => this.handleClick(event);
+  public handleFormChanged(event: ChangeEvent<HTMLInputElement>, name: string): void {
+    let newState = { ...this.state };
+    newState[name] = event.target.value;
+    this.setState(newState);
+  }
 
-  public handleClick = (event: MouseEvent<HTMLInputElement>) => {
+  public handleSubmit = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
     this.props.firebase.createUser(
       { email: this.state.email, password: this.state.password },
       { firstName: this.state.firstName, lastName: this.state.lastName, email: this.state.email }
     ).then((r: any) => {
-      this.props.history.push('/games');
-    }, (e: any) => {
-      this.props.sendMessage(e.message);
+      this.props.history.push("/games");
     }).catch((ex: any) => this.props.sendMessage(ex.message));
   }
 
   public render() {
+    let isDisabled = !(this.state.firstName && this.state.lastName && this.state.email && this.state.password);
     return (
       <React.Fragment>
-        <CardContent>
-          <Typography className={this.props.classes.title} color="textSecondary">
-            Create a new account
+        <form id="register-form" onSubmit={(event: any) => this.handleSubmit(event)}>
+          <CardContent>
+            <Typography className={this.props.classes.title} color="textSecondary">
+              Create a new account
           </Typography>
-          <TextField
-            required={true}
-            fullWidth={true}
-            label="First Name"
-            onChange={this.setFirst}
-            className={this.props.classes.button}
-          />
-          <TextField
-            required={true}
-            fullWidth={true}
-            label="Last Name"
-            onChange={this.setLast}
-            className={this.props.classes.button}
-          />
-          <TextField
-            required={true}
-            fullWidth={true}
-            type="email"
-            label="Email"
-            onChange={this.setEmail}
-            className={this.props.classes.button}
-          />
-          <TextField
-            required={true}
-            fullWidth={true}
-            type="password"
-            label="Password"
-            onChange={this.setPassword}
-            className={this.props.classes.button}
-          />
-        </CardContent>
-        <CardActions>
-          <Button className={this.props.classes.button} variant="contained" style={{ marginLeft: '16px' }} title="Register" color="primary" onClick={this.handleSubmit}>
-            Register
-          </Button>
-          <Button onClick={this.props.onSecondaryButton} size="small">
-            {this.props.secondaryButtonText}
-          </Button>
-        </CardActions>
+            <TextField
+              id="first-name"
+              required={true}
+              fullWidth={true}
+              label="First Name"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFormChanged(event, "firstName")}
+              className={this.props.classes.button}
+            />
+            <TextField
+              id="last-name"
+              required={true}
+              fullWidth={true}
+              label="Last Name"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFormChanged(event, "lastName")}
+              className={this.props.classes.button}
+            />
+            <TextField
+              id="email"
+              required={true}
+              fullWidth={true}
+              type="email"
+              label="Email"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFormChanged(event, "email")}
+              className={this.props.classes.button}
+            />
+            <TextField
+              id="password"
+              required={true}
+              fullWidth={true}
+              type="password"
+              label="Password"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFormChanged(event, "password")}
+              className={this.props.classes.button}
+            />
+          </CardContent>
+          <CardActions>
+            <Button
+              id="submit"
+              form="register-form"
+              type="submit"
+              className={this.props.classes.button}
+              disabled={isDisabled}
+              variant="contained"
+              style={{ marginLeft: '16px' }}
+              title="Register"
+              color="primary">
+              Register
+            </Button>
+            <Button
+              id="secondary-btn"
+              onClick={this.props.onSecondaryButton}
+              size="small">
+              {this.props.secondaryButtonText}
+            </Button>
+          </CardActions>
+        </form>
       </React.Fragment>
     );
   }
 }
 
-const mapDispatchToProps = (dispatch: redux.Dispatch<redux.Action>): IConnectedDispatch => ({
-  sendMessage: (message: string) => {
-    dispatch({ type: MessageTypes.ToastMessage, payload: message });
-  }
-});
+export const RegisterTestComp = RegisterComponent;
 
 export const Register: React.ComponentClass<ILocalProps> = compose<React.ComponentClass<ILocalProps>>(
-  connect(null, mapDispatchToProps),
+  connect(null, { sendMessage: sendMessageAction }),
   withRouter,
   withFirebase
 )(RegisterComponent)

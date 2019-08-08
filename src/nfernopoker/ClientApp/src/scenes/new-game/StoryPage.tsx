@@ -6,6 +6,7 @@ import { compose } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from "react-router";
 import { Game, Story } from "../../core/models";
+import { gameKeyHoc, IGameKeyHocProps } from "../../core/components/gameKeyHoc";
 import StoryForm from "./StoryForm";
 import StoryList from "./StoryList";
 import TfsStoryImport from "./TfsStoryImport";
@@ -22,7 +23,7 @@ interface ITempState {
   story: Story
 }
 
-type IProps = IOwnProps;
+type IProps = IOwnProps & IGameKeyHocProps;
 
 const styles: any = (theme: any) => ({
   container: {
@@ -53,11 +54,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
       storyPoints: "-666"
     };
   }
-
-  getKey(): string {
-    return this.props.location.pathname.substring(7, 27);
-  }
-
+  
   onStoryChange(name: string, value: string): void {
     let newState = { ...this.state };
     newState.story[name] = value
@@ -68,7 +65,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
     let story = { ...this.state.story };
     story.type = "user-added";
     let stories = this.props.game.stories ? [...this.props.game.stories, story] : [story];
-    this.props.firebase.ref(`/games/${this.getKey()}`).update({ stories: stories });
+    this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: stories });
     this.setState({ story: this.getInitialStoryState() })
   }
 
@@ -76,7 +73,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
     let index = this.props.game.stories.indexOf(this.state.story);
     this.props.game.stories[index] = this.state.story;
     let stories = [...this.props.game.stories];
-    this.props.firebase.ref(`/games/${this.getKey()}`).update({ stories: stories });
+    this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: stories });
     this.setState({ story: this.getInitialStoryState() });
   }
 
@@ -86,7 +83,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
 
   removeStory(story: Story): void {
     let stories = this.props.game.stories.filter((s: Story) => story != s);
-    this.props.firebase.ref(`/games/${this.getKey()}`).update({ stories: stories })
+    this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: stories })
     if (this.state.story == story) {
       this.setState({ story: this.getInitialStoryState() });
     }
@@ -101,7 +98,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
 
     return (
       <Paper className={classes.container} >
-        <TfsStoryImport gameKey={this.getKey()}></TfsStoryImport>
+        <TfsStoryImport gameKey={this.props.gameKey}></TfsStoryImport>
         <StoryForm game={this.props.game} story={this.state.story}
           onFormChange={(name: string, value: string) => this.onStoryChange(name, value)}
           onAdd={() => this.addStory()}
@@ -121,12 +118,12 @@ const mapStateToProps = (state: any) => ({
 });
 
 export default compose(
+  gameKeyHoc({ debug: true }),
   withStyles(styles),
   withRouter,
-  firebaseConnect((props: any) => {
-    let key = props.location.pathname.substring(7, 27);
+  firebaseConnect((props: IProps) => {
     return [
-      { path: "/games/" + key, storeAs: currentGame }
+      { path: "/games/" + props.gameKey, storeAs: currentGame }
     ]
   }),
   connect(mapStateToProps)
