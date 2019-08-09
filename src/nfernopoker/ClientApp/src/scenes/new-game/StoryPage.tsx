@@ -54,7 +54,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
       storyPoints: "-666"
     };
   }
-  
+
   onStoryChange(name: string, value: string): void {
     let newState = { ...this.state };
     newState.story[name] = value
@@ -64,6 +64,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
   addStory(): void {
     let story = { ...this.state.story };
     story.type = "user-added";
+    story.id = story.id ? story.id : Guid.newGuid();
     let stories = this.props.game.stories ? [...this.props.game.stories, story] : [story];
     this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: stories });
     this.setState({ story: this.getInitialStoryState() })
@@ -108,6 +109,16 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
           onItemRemove={(s: Story) => this.removeStory(s)} />
       </Paper>
     )
+  }
+}
+
+class Guid {
+  static newGuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0,
+        v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 }
 
