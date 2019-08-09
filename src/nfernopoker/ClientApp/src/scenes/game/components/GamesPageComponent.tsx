@@ -31,57 +31,50 @@ const styles = {
   }
 }
 
+const GamesPage: React.StatelessComponent<IProps> = (props) => {
 
-class GamesPage extends React.Component<IProps> {
+  const { classes } = props;
 
-  constructor(props: IProps) {
-    super(props);
+  if (!isLoaded(props.games)) {
+    return <p>Loading... </p>
   }
 
-  render() {
-    const { classes } = this.props;
+  let cards = new Array<any>();
 
-    if (!isLoaded(this.props.games)) {
-      return <p>Loading... </p>
-    }
-
-    let cards = new Array<any>();
-
-    if (!isEmpty(this.props.games) && isLoaded(this.props.games)) {
-      cards = Object.keys(this.props.games).map((key, index) => {
-        let game = this.props.games[key];
-        return (<Grid key={index} item className={classes.card}>
-          <Card>
-            <CardMedia component="img"
-              style={styles.image}
-              src="/public/img/planning_game.jpg"
-            />
-            <CardContent>
-              <Typography gutterBottom={true}>
-                {game.title}
-              </Typography>
-              <Button color="secondary" onClick={() => this.props.onRemoveItem(key)}>
-                Delete
+  if (!isEmpty(props.games) && isLoaded(props.games)) {
+    cards = Object.keys(props.games).map((key, index) => {
+      let game = props.games[key];
+      return (<Grid key={index} item className={classes.card}>
+        <Card>
+          <CardMedia component="img"
+            style={styles.image}
+            src="/public/img/planning_game.jpg"
+          />
+          <CardContent>
+            <Typography gutterBottom={true}>
+              {game.title}
+            </Typography>
+            <Button color="secondary" onClick={() => props.onRemoveItem(key)}>
+              Delete
               </Button>
-              <Button color="primary" onClick={() => this.props.onPlayGame(key)}>
-                Play
+            <Button color="primary" onClick={() => props.onPlayGame(key)}>
+              Play
               </Button>
-         
-              <Link to={`games/${key}/stories`}> STORIES </Link>
 
-            </CardContent>
-          </Card>
-        </Grid>)
-      });
-    }
-    return (<Grid container
-      direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
-      className={classes.root} spacing={24}>
-      {cards}
-    </Grid>)
+            <Link to={`games/${key}/stories`}> STORIES </Link>
+
+          </CardContent>
+        </Card>
+      </Grid>)
+    });
   }
+  return (<Grid container
+    direction="row"
+    justify="flex-start"
+    alignItems="flex-start"
+    className={classes.root} spacing={24}>
+    {cards}
+  </Grid>)
 }
 
 export default withStyles(styles)(GamesPage)

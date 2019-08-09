@@ -14,8 +14,6 @@ interface IOwnProps {
 
 type IProps = IOwnProps;
 
-
-
 class GamesPageContainer extends React.Component<IProps, any> {
 
   constructor(props: IProps) {

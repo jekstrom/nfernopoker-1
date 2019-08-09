@@ -51,7 +51,7 @@ class StoryPageComponent extends React.Component<IProps, ITempState> {
       url: "n/a",
       description: "",
       acceptanceCriteria: "",
-      storyPoints: "-666"
+      storyPoints: "0"
     };
   }
 

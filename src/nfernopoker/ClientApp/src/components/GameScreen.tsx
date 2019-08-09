@@ -12,10 +12,12 @@ interface IOwnProps {
   game: Game;
   history: any;
   classes: any;
+  profile: any;
 }
 
 interface ITempState {
-  currentStory: Story
+  currentStory: Story,
+  isInGame: boolean
 }
 
 type IProps = IOwnProps & IGameKeyHocProps;
@@ -33,14 +35,16 @@ const styles = {
     gridColumnGap: 10,
     gridRowGap: 10,
     width: '100%',
-    height: '70vh'
+    height: 'calc(100vh - 180px)'
   },
   storylistcontainer: {
     gridArea: 'storyList',
     alignSelf: 'stretch',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    overflowY: 'scroll',
+    height: 'calc(100vh - 180px)'
   },
   storycontainer: {
     gridArea: 'story',
@@ -71,6 +75,10 @@ const styles = {
     padding: '5px', /* Some padding */
     width: '100%',
     height: '100px'/* Set a small width */
+  },
+  storycard: {
+    minHeight: 150,
+    margin: 5
   }
 }
 
@@ -80,20 +88,47 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
   constructor(props: any) {
     super(props)
     this.state = {
-      currentStory: null
+      currentStory: {} as any,
+      isInGame: false
     };
   }
 
   onCardSelected(cardValue: string): void {
     console.log(cardValue);
-    //this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: stories });
+    let currentStoryState = { ...this.state.currentStory };
+    if (!currentStoryState.playerPoints) {
+      currentStoryState.playerPoints = [];
+    }
+    currentStoryState.playerPoints = [...currentStoryState.playerPoints, { player: this.props.profile.email, point: cardValue }];
+
+    let storyUpdates = this.props.game.stories.map(s => s.id == currentStoryState.id ? currentStoryState : s);
+
+    this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: storyUpdates });
   }
 
   onStorySelected(story: Story): void {
-    this.setState({ currentStory: story });
+    this.setState({
+      currentStory: story,
+      isInGame: this.props.game.team.players.some(p => p.email == this.props.profile.email)
+    });
+
+
+    console.log(this.props.profile.email);
     //let story = this.props.game.stories.find(x => x == story)
     console.log(story);
     //this.props.firebase.ref(`/games/${this.props.gameKey}`).update({ stories: stories });
+  }
+
+  storyAverageScore(story: Story) {
+    let sumPoints: number = 0;
+    if (story.playerPoints) {
+      let filteredNumbers = story.playerPoints.filter(z => z.point != "?");
+      filteredNumbers.forEach(pp => {
+        sumPoints += parseInt(pp.point);
+      });
+      return sumPoints / filteredNumbers.length;
+    }
+    return sumPoints;
   }
 
   render() {
@@ -105,6 +140,11 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
       cards: { name: "", value: [] }
     };
 
+    if (!game) {
+      return null;
+    }
+    let isGameOwner = (game.team.ownerEmail == this.props.profile.email);
+
     const cardList = cards && cards.value.map((p, i) => (
       <Card key={i} style={styles.card} onClick={() => this.onCardSelected(p)}>
         <CardContent>
@@ -115,22 +155,31 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
       </Card>
     ));
 
-    const players = game && game.team.players.map((p, i) => (
-      <Card key={i} style={styles.card}>
-        <CardMedia
-          style={styles.image}
-          image="/public/img/playing_card.png"
-        />
-        <CardContent>
-          <Typography gutterBottom={true} component="p">
-            {p.name}
-          </Typography>
-        </CardContent>
-      </Card>
-    ));
+    const players = game && game.team.players.map((p, i) => {
+      let playerPoint = { player: "", point: "" };
+      if (this.state.currentStory.playerPoints) {
+        playerPoint = this.state.currentStory.playerPoints.find(pp => pp.player == p.email);
+      }
+
+      return (
+        <Card key={i} style={styles.card} >
+          {playerPoint && <span>{playerPoint.point}</span>}
+          <CardMedia
+            style={styles.image}
+            image="/public/img/playing_card.png"
+          />
+          <CardContent>
+            <Typography gutterBottom={true} component="p">
+              {p.name}
+            </Typography>
+          </CardContent>
+        </Card >
+      )
+
+    });
 
     const storyList = game && game.stories.map((s, i) => (
-      <Card key={i} onClick={() => this.onStorySelected(s)}>
+      <Card style={styles.storycard} key={i} onClick={() => this.onStorySelected(s)}>
         <CardContent>
           <Typography gutterBottom={true} component="p">
             {s.id} - {s.title}
@@ -140,7 +189,7 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
     ));
 
     return (
-      <div style={styles.layout}>
+      <div style={styles.layout} >
 
         <section style={styles.storylistcontainer}>
           {storyList}
@@ -161,12 +210,17 @@ class GameScreenComponent extends React.Component<IProps, ITempState> {
               <div> {currentStory.storyPoints}</div>
               <a href={currentStory.url} target="_blank">{currentStory.url}</a>
 
-              <div style={styles.cardflexbox}>
+              {this.state.isInGame && <div style={styles.cardflexbox}>
                 {cardList}
-              </div>
+              </div>}
+
+              {isGameOwner && <h1> AVERAGE SCORE IS: {this.storyAverageScore(currentStory)}</h1>}
+
             </React.Fragment>
           }
         </section>
+
+
 
         <section style={styles.playercontainer} >
           {players}
@@ -194,6 +248,3 @@ export const GameScreen: React.ComponentClass<any> = compose<React.ComponentClas
   )
 )(GameScreenComponent);
 
-//<section style={styles.cardcontainer}>
-//  {cardList}
-//</section>
